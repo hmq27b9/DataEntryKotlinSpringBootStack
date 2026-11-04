@@ -1,4 +1,4 @@
-package com.dataentrykotlinstack.backend.exceptions
+package com.dataentrykotlinspringbootstack.backend.exceptions
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

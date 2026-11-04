@@ -1,6 +1,6 @@
-package com.dataentrykotlinstack.backend.repositories
+package com.dataentrykotlinspringbootstack.backend.repositories
 
-import com.dataentrykotlinstack.backend.models.User
+import com.dataentrykotlinspringbootstack.backend.models.User
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.Optional
 

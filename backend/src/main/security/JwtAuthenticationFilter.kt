@@ -1,6 +1,6 @@
-package com.dataentrykotlinstack.backend.security
+package com.dataentrykotlinspringbootstack.backend.security
 
-import com.dataentrykotlinstack.backend.repositories.UserRepository
+import com.dataentrykotlinspringbootstack.backend.repositories.UserRepository
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

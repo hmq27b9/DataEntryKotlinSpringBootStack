@@ -1,6 +1,6 @@
-package com.dataentrykotlinstack.backend.security
+package com.dataentrykotlinspringbootstack.backend.security
 
-import com.dataentrykotlinstack.backend.repositories.UserRepository
+import com.dataentrykotlinspringbootstack.backend.repositories.UserRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager

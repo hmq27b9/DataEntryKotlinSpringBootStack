@@ -1,4 +1,4 @@
-package com.dataentrykotlinstack.backend.models
+package com.dataentrykotlinspringbootstack.backend.models
 
 import jakarta.persistence.*
 

@@ -1,4 +1,4 @@
-package com.dataentrykotlinstack.backend.security
+package com.dataentrykotlinspringbootstack.backend.security
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts

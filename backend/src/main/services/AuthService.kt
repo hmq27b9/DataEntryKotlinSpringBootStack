@@ -1,10 +1,10 @@
-package com.dataentrykotlinstack.backend.services
+package com.dataentrykotlinspringbootstack.backend.services
 
-import com.dataentrykotlinstack.backend.dto.LoginRequest
-import com.dataentrykotlinstack.backend.dto.RegisterRequest
-import com.dataentrykotlinstack.backend.models.User
-import com.dataentrykotlinstack.backend.repositories.UserRepository
-import com.dataentrykotlinstack.backend.security.JwtService
+import com.dataentrykotlinspringbootstack.backend.dto.LoginRequest
+import com.dataentrykotlinspringbootstack.backend.dto.RegisterRequest
+import com.dataentrykotlinspringbootstack.backend.models.User
+import com.dataentrykotlinspringbootstack.backend.repositories.UserRepository
+import com.dataentrykotlinspringbootstack.backend.security.JwtService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder

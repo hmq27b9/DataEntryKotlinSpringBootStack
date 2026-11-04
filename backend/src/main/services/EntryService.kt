@@ -1,10 +1,10 @@
-package com.dataentrykotlinstack.backend.services
+package com.dataentrykotlinspringbootstack.backend.services
 
-import com.dataentrykotlinstack.backend.dto.EntryRequest
-import com.dataentrykotlinstack.backend.dto.EntryResponse
-import com.dataentrykotlinstack.backend.models.Entry
-import com.dataentrykotlinstack.backend.repositories.EntryRepository
-import com.dataentrykotlinstack.backend.repositories.UserRepository
+import com.dataentrykotlinspringbootstack.backend.dto.EntryRequest
+import com.dataentrykotlinspringbootstack.backend.dto.EntryResponse
+import com.dataentrykotlinspringbootstack.backend.models.Entry
+import com.dataentrykotlinspringbootstack.backend.repositories.EntryRepository
+import com.dataentrykotlinspringbootstack.backend.repositories.UserRepository
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 

@@ -1,4 +1,4 @@
-package com.dataentrykotlinstack.backend
+package com.dataentrykotlinspringbootstack.backend
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

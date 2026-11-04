@@ -1,8 +1,8 @@
-package com.dataentrykotlinstack.backend.controllers
+package com.dataentrykotlinspringbootstack.backend.controllers
 
-import com.dataentrykotlinstack.backend.dto.EntryRequest
-import com.dataentrykotlinstack.backend.dto.EntryResponse
-import com.dataentrykotlinstack.backend.services.EntryService
+import com.dataentrykotlinspringbootstack.backend.dto.EntryRequest
+import com.dataentrykotlinspringbootstack.backend.dto.EntryResponse
+import com.dataentrykotlinspringbootstack.backend.services.EntryService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

@@ -1,9 +1,9 @@
-package com.dataentrykotlinstack.backend.controllers
+package com.dataentrykotlinspringbootstack.backend.controllers
 
-import com.dataentrykotlinstack.backend.dto.LoginRequest
-import com.dataentrykotlinstack.backend.dto.RegisterRequest
-import com.dataentrykotlinstack.backend.dto.TokenResponse
-import com.dataentrykotlinstack.backend.services.AuthService
+import com.dataentrykotlinspringbootstack.backend.dto.LoginRequest
+import com.dataentrykotlinspringbootstack.backend.dto.RegisterRequest
+import com.dataentrykotlinspringbootstack.backend.dto.TokenResponse
+import com.dataentrykotlinspringbootstack.backend.services.AuthService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
