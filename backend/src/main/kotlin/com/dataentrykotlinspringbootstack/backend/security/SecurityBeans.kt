@@ -13,11 +13,13 @@ class SecurityBeans(private val userRepository: UserRepository) {
 
     @Bean
     fun userDetailsService(): UserDetailsService {
-        return UserDetailsService { email ->
-            val user = userRepository.findByEmail(email)
-                .orElseThrow { UsernameNotFoundException("User not found: $email") }
+        return UserDetailsService { identifier ->
+            val user = userRepository.findByEmail(identifier)
+                .or { userRepository.findByUsername(identifier) }
+                .orElseThrow { UsernameNotFoundException("User not found: $identifier") }
+
             org.springframework.security.core.userdetails.User(
-                user.email,
+                user.email,              // canonical principal = email
                 user.passwordHash,
                 emptyList()
             )
