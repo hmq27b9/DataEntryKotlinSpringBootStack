@@ -10,7 +10,7 @@ class User(
     val id: Long? = null,
 
     @Column(unique = true, nullable = false)
-    var email: String,
+    val email: String,
 
     @Column(nullable = false)
     var passwordHash: String

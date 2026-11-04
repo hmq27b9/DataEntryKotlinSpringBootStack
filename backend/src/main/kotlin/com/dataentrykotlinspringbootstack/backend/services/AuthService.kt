@@ -26,6 +26,7 @@ class AuthService(
         val user = User(
             email = request.email,
             passwordHash = passwordEncoder.encode(request.password)
+                ?: throw IllegalStateException("Password encoding failed")
         )
         userRepository.save(user)
 
