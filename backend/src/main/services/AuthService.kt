@@ -1,0 +1,41 @@
+package com.dataentrykotlinstack.backend.services
+
+import com.dataentrykotlinstack.backend.dto.LoginRequest
+import com.dataentrykotlinstack.backend.dto.RegisterRequest
+import com.dataentrykotlinstack.backend.models.User
+import com.dataentrykotlinstack.backend.repositories.UserRepository
+import com.dataentrykotlinstack.backend.security.JwtService
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.stereotype.Service
+
+@Service
+class AuthService(
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtService: JwtService,
+    private val authenticationManager: AuthenticationManager
+) {
+
+    fun register(request: RegisterRequest): String {
+        if (userRepository.existsByEmail(request.email)) {
+            throw IllegalArgumentException("Email already registered")
+        }
+
+        val user = User(
+            email = request.email,
+            passwordHash = passwordEncoder.encode(request.password)
+        )
+        userRepository.save(user)
+
+        return jwtService.generateToken(user.email)
+    }
+
+    fun login(request: LoginRequest): String {
+        authenticationManager.authenticate(
+            UsernamePasswordAuthenticationToken(request.email, request.password)
+        )
+        return jwtService.generateToken(request.email)
+    }
+}
