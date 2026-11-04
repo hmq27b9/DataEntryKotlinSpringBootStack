@@ -1,25 +1,43 @@
 package com.dataentrykotlinspringbootstack.backend.controllers
 
-import com.dataentrykotlinspringbootstack.backend.dto.EntryRequest
-import com.dataentrykotlinspringbootstack.backend.dto.EntryResponse
-import com.dataentrykotlinspringbootstack.backend.services.EntryService
-import jakarta.validation.Valid
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import com.dataentrykotlinspringbootstack.backend.models.Entry
+import com.dataentrykotlinspringbootstack.backend.models.EntryRepository
+import com.dataentrykotlinspringbootstack.backend.models.User
+import com.dataentrykotlinspringbootstack.backend.models.UserRepository
+import jakarta.validation.constraints.NotBlank
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.stereotype.Service
 
-@RestController
-@RequestMapping("/entries")
-class EntryController(private val entryService: EntryService) {
+data class EntryRequest(
+    @field:NotBlank val content: String
+)
 
-    @GetMapping
-    fun list(): ResponseEntity<List<EntryResponse>> {
-        return ResponseEntity.ok(entryService.listEntries())
+data class EntryResponse(
+    val id: Long,
+    val content: String
+)
+
+@Service
+class EntryController(
+    private val entryRepository: EntryRepository,
+    private val userRepository: UserRepository
+) {
+
+    fun createEntry(request: EntryRequest): EntryResponse {
+        val user = currentUser()
+        val saved = entryRepository.save(Entry(content = request.content, user = user))
+        return EntryResponse(saved.id!!, saved.content)
     }
 
-    @PostMapping
-    fun create(@Valid @RequestBody request: EntryRequest): ResponseEntity<EntryResponse> {
-        val created = entryService.createEntry(request)
-        return ResponseEntity.status(HttpStatus.CREATED).body(created)
+    fun listEntries(): List<EntryResponse> {
+        val user = currentUser()
+        return entryRepository.findByUser(user).map { EntryResponse(it.id!!, it.content) }
+    }
+
+    private fun currentUser(): User {
+        val email = SecurityContextHolder.getContext().authentication?.name
+            ?: throw IllegalStateException("No authenticated user")
+        return userRepository.findByEmail(email)
+            .orElseThrow { IllegalStateException("Authenticated user not found") }
     }
 }
