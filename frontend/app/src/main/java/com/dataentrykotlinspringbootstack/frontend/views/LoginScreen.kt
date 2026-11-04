@@ -1,77 +1,141 @@
 package com.dataentrykotlinspringbootstack.frontend.views
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.dataentrykotlinspringbootstack.frontend.controllers.AuthViewModel
+import com.dataentrykotlinspringbootstack.frontend.controllers.AuthController
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel,
+    controller: AuthController,
     onLoginSuccess: () -> Unit
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state by controller.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(state.loggedIn) {
         if (state.loggedIn) onLoginSuccess()
     }
 
     Box(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Sign in", style = MaterialTheme.typography.headlineMedium)
-
-            OutlinedTextField(
-                value = state.identifier,
-                onValueChange = viewModel::onIdentifierChange,
-                label = { Text("Email or username") },
-                singleLine = true,
-                enabled = !state.loading,
-                modifier = Modifier.fillMaxWidth()
+            Text(
+                "Sign in",
+                color = Color.Black,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
             )
 
-            OutlinedTextField(
+            BwTextField(
+                value = state.identifier,
+                onValueChange = controller::onIdentifierChange,
+                placeholder = "Email or username",
+                enabled = !state.loading
+            )
+
+            BwTextField(
                 value = state.password,
-                onValueChange = viewModel::onPasswordChange,
-                label = { Text("Password") },
-                singleLine = true,
+                onValueChange = controller::onPasswordChange,
+                placeholder = "Password",
                 enabled = !state.loading,
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                password = true
             )
 
             if (state.error != null) {
-                Text(state.error!!, color = MaterialTheme.colorScheme.error)
+                Text(state.error!!, color = Color.Black, fontSize = 14.sp)
             }
 
-            Button(
-                onClick = viewModel::login,
+            BwButton(
+                label = if (state.loading) "Signing in..." else "Login",
                 enabled = !state.loading,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (state.loading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                } else {
-                    Text("Login")
-                }
-            }
+                onClick = controller::login
+            )
         }
+    }
+}
+
+@Composable
+fun BwTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    enabled: Boolean = true,
+    password: Boolean = false
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, Color.Black)
+            .background(Color.White)
+            .padding(12.dp)
+    ) {
+        if (value.isEmpty()) {
+            Text(placeholder, color = Color.Gray, fontSize = 16.sp)
+        }
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            enabled = enabled,
+            singleLine = true,
+            textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
+            visualTransformation = if (password) PasswordVisualTransformation() else VisualTransformation.None,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+fun BwButton(
+    label: String,
+    enabled: Boolean,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, Color.Black)
+            .background(if (enabled) Color.Black else Color.White)
+            .clickable(
+                enabled = enabled,
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            )
+            .padding(14.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            label,
+            color = if (enabled) Color.White else Color.Black,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium
+        )
     }
 }

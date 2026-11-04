@@ -3,53 +3,50 @@ package com.dataentrykotlinspringbootstack.frontend
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.dataentrykotlinspringbootstack.frontend.controllers.AuthViewModel
-import com.dataentrykotlinspringbootstack.frontend.controllers.EntryViewModel
-import com.dataentrykotlinspringbootstack.frontend.network.RetrofitClient
-import com.dataentrykotlinspringbootstack.frontend.storage.TokenStore
+import com.dataentrykotlinspringbootstack.frontend.controllers.AuthController
+import com.dataentrykotlinspringbootstack.frontend.controllers.AuthInterceptor
+import com.dataentrykotlinspringbootstack.frontend.controllers.EntryController
+import com.dataentrykotlinspringbootstack.frontend.controllers.TokenStore
+import com.dataentrykotlinspringbootstack.frontend.routers.AuthRouter
+import com.dataentrykotlinspringbootstack.frontend.routers.EntryRouter
 import com.dataentrykotlinspringbootstack.frontend.views.EntryScreen
 import com.dataentrykotlinspringbootstack.frontend.views.LoginScreen
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var tokenStore: TokenStore
-    private lateinit var authViewModel: AuthViewModel
-    private lateinit var entryViewModel: EntryViewModel
+    private lateinit var authController: AuthController
+    private lateinit var entryController: EntryController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        tokenStore = TokenStore(this)
-        val apiService = RetrofitClient.create(tokenStore)
+        val tokenStore = TokenStore(this)
+        val interceptor = AuthInterceptor(tokenStore)
 
-        authViewModel = AuthViewModel(apiService, tokenStore)
-        entryViewModel = EntryViewModel(apiService)
+        val userRepository = AuthRouter.create(interceptor)
+        val entryRepository = EntryRouter.create(interceptor)
+
+        authController = AuthController(userRepository, tokenStore)
+        entryController = EntryController(entryRepository)
 
         setContent {
-            MaterialTheme {
-                Surface { AppNav(authViewModel, entryViewModel) }
-            }
+            AppNav(authController, entryController)
         }
     }
 }
 
 @Composable
-fun AppNav(authViewModel: AuthViewModel, entryViewModel: EntryViewModel) {
+fun AppNav(authController: AuthController, entryController: EntryController) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "login") {
         composable("login") {
             LoginScreen(
-                viewModel = authViewModel,
+                controller = authController,
                 onLoginSuccess = {
                     navController.navigate("entries") {
                         popUpTo("login") { inclusive = true }
@@ -59,9 +56,9 @@ fun AppNav(authViewModel: AuthViewModel, entryViewModel: EntryViewModel) {
         }
         composable("entries") {
             EntryScreen(
-                viewModel = entryViewModel,
+                controller = entryController,
                 onLogout = {
-                    authViewModel.logout()
+                    authController.logout()
                     navController.navigate("login") {
                         popUpTo("entries") { inclusive = true }
                     }

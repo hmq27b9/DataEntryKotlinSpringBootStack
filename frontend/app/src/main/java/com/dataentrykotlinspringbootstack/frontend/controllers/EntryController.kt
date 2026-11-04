@@ -2,9 +2,9 @@ package com.dataentrykotlinspringbootstack.frontend.controllers
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dataentrykotlinspringbootstack.frontend.models.EntryRepository
 import com.dataentrykotlinspringbootstack.frontend.models.EntryRequest
 import com.dataentrykotlinspringbootstack.frontend.models.EntryResponse
-import com.dataentrykotlinspringbootstack.frontend.network.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,14 +18,12 @@ data class EntryUiState(
     val error: String? = null
 )
 
-class EntryViewModel(private val apiService: ApiService) : ViewModel() {
+class EntryController(private val repository: EntryRepository) : ViewModel() {
 
     private val _state = MutableStateFlow(EntryUiState())
     val state: StateFlow<EntryUiState> = _state.asStateFlow()
 
-    init {
-        refresh()
-    }
+    init { refresh() }
 
     fun onInputChange(value: String) {
         _state.value = _state.value.copy(input = value, error = null)
@@ -35,7 +33,7 @@ class EntryViewModel(private val apiService: ApiService) : ViewModel() {
         viewModelScope.launch {
             _state.value = _state.value.copy(loading = true, error = null)
             try {
-                val entries = apiService.listEntries()
+                val entries = repository.listEntries()
                 _state.value = _state.value.copy(entries = entries, loading = false)
             } catch (e: Exception) {
                 _state.value = _state.value.copy(
@@ -49,11 +47,10 @@ class EntryViewModel(private val apiService: ApiService) : ViewModel() {
     fun submit() {
         val content = _state.value.input.trim()
         if (content.isEmpty()) return
-
         viewModelScope.launch {
             _state.value = _state.value.copy(submitting = true, error = null)
             try {
-                apiService.createEntry(EntryRequest(content))
+                repository.createEntry(EntryRequest(content))
                 _state.value = _state.value.copy(input = "", submitting = false)
                 refresh()
             } catch (e: Exception) {

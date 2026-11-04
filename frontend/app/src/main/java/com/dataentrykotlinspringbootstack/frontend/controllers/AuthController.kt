@@ -1,14 +1,38 @@
 package com.dataentrykotlinspringbootstack.frontend.controllers
 
+import android.content.Context
+import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dataentrykotlinspringbootstack.frontend.models.LoginRequest
-import com.dataentrykotlinspringbootstack.frontend.network.ApiService
-import com.dataentrykotlinspringbootstack.frontend.storage.TokenStore
+import com.dataentrykotlinspringbootstack.frontend.models.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.Interceptor
+import okhttp3.Response
+
+class TokenStore(context: Context) {
+    private val prefs = context.applicationContext
+        .getSharedPreferences("auth", Context.MODE_PRIVATE)
+
+    fun saveToken(token: String) = prefs.edit { putString("jwt", token) }
+    fun getToken(): String? = prefs.getString("jwt", null)
+    fun clear() = prefs.edit { remove("jwt") }
+}
+
+class AuthInterceptor(private val tokenStore: TokenStore) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val token = tokenStore.getToken()
+        val request = if (token != null) {
+            chain.request().newBuilder()
+                .addHeader("Authorization", "Bearer $token")
+                .build()
+        } else chain.request()
+        return chain.proceed(request)
+    }
+}
 
 data class LoginUiState(
     val identifier: String = "",
@@ -18,8 +42,8 @@ data class LoginUiState(
     val loggedIn: Boolean = false
 )
 
-class AuthViewModel(
-    private val apiService: ApiService,
+class AuthController(
+    private val userRepository: UserRepository,
     private val tokenStore: TokenStore
 ) : ViewModel() {
 
@@ -40,11 +64,10 @@ class AuthViewModel(
             _state.value = current.copy(error = "Both fields are required")
             return
         }
-
         viewModelScope.launch {
             _state.value = current.copy(loading = true, error = null)
             try {
-                val response = apiService.login(
+                val response = userRepository.login(
                     LoginRequest(current.identifier.trim(), current.password)
                 )
                 tokenStore.saveToken(response.token)
